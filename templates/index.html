@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="11인 대규모 일정 조율 및 선착순 8명 마감 웹 애플리케이션 프로토타입">
+  <title>모여봐요! 선착순 일정 조율</title>
+  <!-- Google Fonts (Outfit & Noto Sans KR) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --primary-glow: rgba(99, 102, 241, 0.4);
+      --success: #10b981;
+      --success-glow: rgba(16, 185, 129, 0.3);
+      --danger: #f43f5e;
+      --accent: #ec4899;
+      --accent-glow: rgba(236, 72, 153, 0.3);
+      --input-bg: rgba(15, 23, 42, 0.6);
+      --font-outfit: 'Outfit', 'Noto Sans KR', sans-serif;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-outfit);
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      line-height: 1.6;
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    /* Header styling */
+    header {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(to right, #a5b4fc, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.05em;
+      cursor: pointer;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      font-weight: 300;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 24px;
+      padding: 2rem;
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+      transition: var(--transition);
+    }
+
+    .card:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.6);
+    }
+
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 0.75rem;
+    }
+
+    .card-title-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .card-title span.badge {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-primary {
+      background: var(--primary);
+      box-shadow: 0 0 10px var(--primary-glow);
+    }
+
+    .badge-accent {
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      transition: var(--transition);
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 14px var(--primary-glow);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--primary-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+    }
+
+    .btn-primary:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .btn-danger {
+      background: rgba(244, 63, 94, 0.2);
+      border: 1px solid var(--danger);
+      color: #fda4af;
+    }
+
+    .btn-danger:hover {
+      background: var(--danger);
+      color: white;
+      box-shadow: 0 4px 14px rgba(244, 63, 94, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    /* Link share panel */
+    .share-panel {
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid var(--primary);
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .share-url-container {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .share-url-input {
+      flex-grow: 1;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 0.5rem 0.75rem;
+      color: #818cf8;
+      font-size: 0.95rem;
+      font-family: monospace;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    /* Calendar and Sidebar grid inside the Host card */
+    .calendar-sidebar-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    @media (min-width: 640px) {
+      .calendar-sidebar-layout {
+        grid-template-columns: 1.2fr 1fr;
+      }
+    }
+
+    /* Custom Calendar Component */
+    .calendar-container {
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.25rem;
+      user-select: none;
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .calendar-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .calendar-nav-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .calendar-nav-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .calendar-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      font-weight: bold;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      text-align: center;
+    }
+
+    .calendar-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: var(--transition);
+      color: var(--text-main);
+    }
+
+    .calendar-day:hover:not(.empty) {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .calendar-day.empty {
+      cursor: default;
+      opacity: 0.2;
+    }
+
+    .calendar-day.selected {
+      background: var(--primary);
+      color: white;
+      font-weight: bold;
+      box-shadow: 0 0 12px var(--primary-glow);
+    }
+
+    .calendar-day.today {
+      border: 1px solid var(--primary);
+    }
+
+    /* Selected Dates list */
+    .selected-list-panel {
+      background: rgba(15, 23, 42, 0.3);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      max-height: 310px;
+    }
+
+    .selected-list-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .selected-list-count {
+      background: var(--accent);
+      color: white;
+      font-size: 0.75rem;
+      padding: 0.1rem 0.5rem;
+      border-radius: 9999px;
+      font-weight: bold;
+    }
+
+    .selected-list-items {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      overflow-y: auto;
+      flex-grow: 1;
+      padding-right: 0.25rem;
+    }
+
+    .selected-date-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      animation: popIn 0.2s ease-out;
+    }
+
+    .selected-date-item button {
+      background: none;
+      border: none;
+      color: var(--danger);
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0 0.25rem;
+      transition: var(--transition);
+    }
+
+    .selected-date-item button:hover {
+      transform: scale(1.2);
+    }
+
+    /* Voting Options List */
+    .vote-options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .vote-option-card {
+      background: rgba(15, 23, 42, 0.4);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .vote-option-card:hover:not(.locked) {
+      border-color: var(--primary);
+      background: rgba(99, 102, 241, 0.05);
+    }
+
+    .vote-option-card input[type="checkbox"] {
+      display: none;
+    }
+
+    .checkbox-custom {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--text-muted);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 1rem;
+      transition: var(--transition);
+      flex-shrink: 0;
+    }
+
+    .vote-option-card.selected .checkbox-custom {
+      border-color: var(--primary);
+      background: var(--primary);
+    }
+
+    .vote-option-card.selected .checkbox-custom::after {
+      content: '✓';
+      color: white;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+
+    /* Locked state */
+    .vote-option-card.locked {
+      background: rgba(15, 23, 42, 0.8);
+      border-color: rgba(244, 63, 94, 0.3);
+      cursor: not-allowed;
+      opacity: 0.75;
+    }
+
+    .vote-option-card.locked::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 4px;
+      background: var(--danger);
+    }
+
+    .vote-option-card.locked .checkbox-custom {
+      border-color: rgba(244, 63, 94, 0.5);
+      background: rgba(244, 63, 94, 0.1);
+    }
+
+    .vote-option-card.locked .checkbox-custom::after {
+      content: '✕';
+      color: var(--danger);
+      font-weight: bold;
+      font-size: 0.8rem;
+    }
+
+    /* Progress bar */
+    .progress-bar-container {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 9999px;
+      margin-top: 0.75rem;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(to right, var(--primary), var(--accent));
+      border-radius: 9999px;
+      transition: width 0.5s ease-out;
+    }
+
+    .progress-bar.full {
+      background: linear-gradient(to right, var(--success), #34d399);
+      box-shadow: 0 0 10px var(--success-glow);
+    }
+
+    /* Result Panel Style */
+    .result-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .result-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.25rem;
+      transition: var(--transition);
+    }
+
+    .result-card.locked-border {
+      border-color: var(--success);
+      background: rgba(16, 185, 129, 0.03);
+    }
+
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .result-date {
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .result-count {
+      font-weight: 800;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .result-count.maxed {
+      color: var(--success);
+      text-shadow: 0 0 10px var(--success-glow);
+    }
+
+    .voters-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+
+    .voter-tag {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 9999px;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-main);
+      animation: popIn 0.3s ease-out;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .lock-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid var(--success);
+      color: #a7f3d0;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    /* Helper Testing Tool Panel */
+    .helper-panel {
+      background: linear-gradient(135deg, rgba(236, 72, 153, 0.05) 0%, rgba(99, 102, 241, 0.05) 100%);
+      border: 1px dashed rgba(99, 102, 241, 0.3);
+    }
+
+    .helper-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    @media (min-width: 640px) {
+      .helper-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    /* Quick Alert Modal */
+    .alert-banner {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background: #1e293b;
+      border-left: 4px solid var(--primary);
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transform: translateX(120%);
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .alert-banner.show {
+      transform: translateX(0);
+    }
+
+    .alert-banner.success {
+      border-left-color: var(--success);
+    }
+
+    .alert-banner.danger {
+      border-left-color: var(--danger);
+    }
+
+    .empty-state {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 2rem 0;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header -->
+    <header onclick="goToMain()">
+      <h1>모여봐요! 선착순 일정 조율</h1>
+      <p>11인 일정 조율 및 실시간 선착순 8명 자동 마감 시스템</p>
+    </header>
+
+    <!-- Developer/Test Quick Utility (Only shown inside a room) -->
+    <section class="card helper-panel" id="testToolSection" style="display: none;">
+      <div class="card-title">
+        <span class="badge badge-accent">TEST TOOL</span>
+        <h2>개발자용 빠른 테스트 도구</h2>
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">
+        선착순 8명 마감 로직을 즉시 확인하고 검증할 수 있는 단축 도구입니다.
+      </p>
+      <div class="helper-grid">
+        <button id="btnQuickTest" class="btn btn-secondary" onclick="simulateFullVotes()">
+          ⚡ 첫 번째 후보 날짜에 8명 즉시 투표 시뮬레이션
+        </button>
+      </div>
+    </section>
+
+    <!-- 1. Open Schedule Card (Host) - Only shown on Main Page -->
+    <section class="card" id="hostSection">
+      <div class="card-title">
+        <div class="card-title-left">
+          <span class="badge badge-primary">HOST</span>
+          <h2>새로운 투표방 만들기</h2>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="scheduleTitle">일정 제목 (모임명)</label>
+        <input type="text" id="scheduleTitle" placeholder="예: 7월 동창회, 프로젝트 기획 회의">
+      </div>
+
+      <div class="form-group">
+        <label>후보 날짜 선택 (달력에서 원하는 날짜들을 클릭해 주세요)</label>
+        
+        <div class="calendar-sidebar-layout">
+          <!-- Interactive Calendar -->
+          <div class="calendar-container">
+            <div class="calendar-header">
+              <button class="calendar-nav-btn" onclick="changeMonth(-1)">&larr;</button>
+              <div class="calendar-title" id="calendarTitle">2026년 7월</div>
+              <button class="calendar-nav-btn" onclick="changeMonth(1)">&rarr;</button>
+            </div>
+            <div class="calendar-weekdays">
+              <div style="color: var(--danger)">일</div>
+              <div>월</div>
+              <div>화</div>
+              <div>수</div>
+              <div>목</div>
+              <div>금</div>
+              <div style="color: #60a5fa">토</div>
+            </div>
+            <div class="calendar-grid" id="calendarGrid">
+              <!-- Days will be dynamically rendered -->
+            </div>
+          </div>
+
+          <!-- Selected list -->
+          <div class="selected-list-panel">
+            <div class="selected-list-title">
+              <span>선택된 날짜</span>
+              <span class="selected-list-count" id="selectedCount">0</span>
+            </div>
+            <div class="selected-list-items" id="selectedList">
+              <div class="empty-state" style="padding: 1rem 0; font-size: 0.85rem;">선택된 날짜가 없습니다.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="btnCreateSchedule" onclick="createSchedule()" style="width: 100%; margin-top: 1rem;">
+        📅 일정 투표방 개설하기
+      </button>
+
+      <!-- Created Room Share Info -->
+      <div class="share-panel" id="sharePanel" style="display: none;">
+        <p style="font-weight: 700; color: #a5b4fc; font-size: 1rem;">🎉 투표방이 성공적으로 개설되었습니다!</p>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">아래 링크를 공유하여 참여자들에게 투표를 받으세요.</p>
+        <div class="share-url-container">
+          <div class="share-url-input" id="shareUrl">http://...</div>
+          <button class="btn btn-secondary" onclick="copyShareLink()" style="padding: 0.5rem 1rem; font-size: 0.9rem;">주소 복사</button>
+        </div>
+        <button class="btn btn-primary" onclick="goToCreatedRoom()" style="margin-top: 0.5rem; font-size: 0.95rem;">
+          🚀 개설된 투표방으로 이동하기
+        </button>
+      </div>
+    </section>
+
+    <!-- 2. Active Schedule & Voting Section (Voter) - Only shown inside a Room -->
+    <section class="card" id="voteSection" style="display: none;">
+      <div class="card-title">
+        <div class="card-title-left">
+          <span class="badge badge-primary">VOTE</span>
+          <h2 id="voteScheduleTitle">일정 투표하기</h2>
+        </div>
+        <button class="btn btn-secondary" onclick="goToMain()" style="font-size: 0.8rem; padding: 0.4rem 0.8rem;">
+          ➕ 새 방 만들기
+        </button>
+      </div>
+
+      <div class="form-group">
+        <label for="voterName">투표자 성함</label>
+        <input type="text" id="voterName" placeholder="본인의 이름을 입력하세요 (예: 홍길동)" required>
+      </div>
+
+      <div class="form-group">
+        <label>후보 날짜 선택 (중복 선택 가능, 선착순 8명 마감)</label>
+        <div class="vote-options-grid" id="voteOptionsList">
+          <!-- Dynamically rendered checkbox-cards -->
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="submitVote()" style="width: 100%; margin-top: 1rem;">
+        ✏️ 투표 제출하기
+      </button>
+    </section>
+
+    <!-- 3. Live Results Section (Dashboard) - Only shown inside a Room -->
+    <section class="card" id="resultsSection" style="display: none;">
+      <div class="card-title">
+        <div class="card-title-left">
+          <span class="badge badge-accent">LIVE</span>
+          <h2>실시간 투표 현황판</h2>
+        </div>
+      </div>
+      
+      <div class="result-list" id="resultBoard">
+        <!-- Dynamically rendered live counts -->
+      </div>
+    </section>
+
+    <!-- 404 Error Card -->
+    <section class="card" id="errorCard" style="display: none; text-align: center; padding: 3rem 2rem;">
+      <h2 style="font-size: 2rem; color: var(--danger); margin-bottom: 1rem;">존재하지 않는 투표방입니다</h2>
+      <p style="color: var(--text-muted); margin-bottom: 2rem;">방 링크가 잘못되었거나 삭제되었습니다. 새로운 투표방을 만들어 보세요!</p>
+      <button class="btn btn-primary" onclick="goToMain()">메인으로 이동하기</button>
+    </section>
+
+  </div>
+
+  <!-- Toast Notification Alert -->
+  <div id="toastAlert" class="alert-banner">
+    <span id="toastMessage">알림 내용</span>
+  </div>
+
+  <script>
+    // State management
+    let roomState = null; // Stores currently fetched room details from server
+    let selectedDates = new Set(); // Stores dates selected on main calendar
+    let displayDate = new Date(); // Calendar month/year navigation state
+    let createdRoomId = null;
+
+    // Detect environment on startup
+    window.onload = function() {
+      const roomId = getRoomIdFromUrl();
+      if (roomId) {
+        loadRoom(roomId);
+      } else {
+        setupMainPage();
+      }
+    };
+
+    function getRoomIdFromUrl() {
+      const pathParts = window.location.pathname.split('/');
+      // /room/<room_id> => pathParts = ["", "room", "<room_id>"]
+      if (pathParts.length > 2 && pathParts[1] === 'room') {
+        return pathParts[2];
+      }
+      return null;
+    }
+
+    function setupMainPage() {
+      document.getElementById('hostSection').style.display = 'block';
+      document.getElementById('voteSection').style.display = 'none';
+      document.getElementById('resultsSection').style.display = 'none';
+      document.getElementById('testToolSection').style.display = 'none';
+      document.getElementById('errorCard').style.display = 'none';
+      
+      // Default selections for initial builder view
+      const today = new Date();
+      const date1 = new Date(today);
+      date1.setDate(today.getDate() + 1);
+      const date2 = new Date(today);
+      date2.setDate(today.getDate() + 2);
+      
+      selectedDates.clear();
+      selectedDates.add(formatDateString(date1));
+      selectedDates.add(formatDateString(date2));
+      
+      renderCalendar();
+      renderSelectedDatesList();
+    }
+
+    function loadRoom(roomId) {
+      fetch(`/api/rooms/${roomId}`)
+        .then(response => {
+          if (!response.ok) throw new Error('Room not found');
+          return response.json();
+        })
+        .then(data => {
+          roomState = data;
+          document.getElementById('hostSection').style.display = 'none';
+          document.getElementById('voteSection').style.display = 'block';
+          document.getElementById('resultsSection').style.display = 'block';
+          document.getElementById('testToolSection').style.display = 'block';
+          document.getElementById('errorCard').style.display = 'none';
+          
+          renderVoteOptions();
+          renderResults();
+        })
+        .catch(err => {
+          document.getElementById('hostSection').style.display = 'none';
+          document.getElementById('voteSection').style.display = 'none';
+          document.getElementById('resultsSection').style.display = 'none';
+          document.getElementById('testToolSection').style.display = 'none';
+          document.getElementById('errorCard').style.display = 'block';
+        });
+    }
+
+    // Navigation
+    function goToMain() {
+      window.history.pushState({}, '', '/');
+      setupMainPage();
+      document.getElementById('scheduleTitle').value = '';
+      document.getElementById('sharePanel').style.display = 'none';
+    }
+
+    function goToCreatedRoom() {
+      if (createdRoomId) {
+        window.history.pushState({}, '', `/room/${createdRoomId}`);
+        loadRoom(createdRoomId);
+      }
+    }
+
+    // Helpers
+    function formatDateString(dateObj) {
+      const yyyy = dateObj.getFullYear();
+      const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const dd = String(dateObj.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    function formatFriendlyDate(dateStr) {
+      const parts = dateStr.split('-');
+      const dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
+      const days = ['일', '월', '화', '수', '목', '금', '토'];
+      
+      const yyyy = dateObj.getFullYear();
+      const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const dd = String(dateObj.getDate()).padStart(2, '0');
+      const day = days[dateObj.getDay()];
+      
+      return `${yyyy}년 ${mm}월 ${dd}일 (${day})`;
+    }
+
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toastAlert');
+      const toastMsg = document.getElementById('toastMessage');
+      
+      toast.className = `alert-banner ${type} show`;
+      toastMsg.innerText = message;
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3500);
+    }
+
+    // Calendar Component
+    function changeMonth(direction) {
+      displayDate.setMonth(displayDate.getMonth() + direction);
+      renderCalendar();
+    }
+
+    function renderCalendar() {
+      const calendarTitle = document.getElementById('calendarTitle');
+      const calendarGrid = document.getElementById('calendarGrid');
+      
+      const year = displayDate.getFullYear();
+      const month = displayDate.getMonth();
+      
+      calendarTitle.innerText = `${year}년 ${month + 1}월`;
+      calendarGrid.innerHTML = '';
+      
+      const firstDayIndex = new Date(year, month, 1).getDay();
+      const totalDays = new Date(year, month + 1, 0).getDate();
+      
+      for (let i = 0; i < firstDayIndex; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'calendar-day empty';
+        calendarGrid.appendChild(emptyCell);
+      }
+      
+      const today = new Date();
+      const todayStr = formatDateString(today);
+      
+      for (let day = 1; day <= totalDays; day++) {
+        const dayCell = document.createElement('div');
+        dayCell.className = 'calendar-day';
+        
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        dayCell.innerText = day;
+        
+        if (dateStr === todayStr) {
+          dayCell.classList.add('today');
+        }
+        if (selectedDates.has(dateStr)) {
+          dayCell.classList.add('selected');
+        }
+        
+        dayCell.onclick = () => toggleDateSelection(dateStr);
+        calendarGrid.appendChild(dayCell);
+      }
+    }
+
+    function toggleDateSelection(dateStr) {
+      if (selectedDates.has(dateStr)) {
+        selectedDates.delete(dateStr);
+      } else {
+        selectedDates.add(dateStr);
+      }
+      renderCalendar();
+      renderSelectedDatesList();
+    }
+
+    function removeSelectedDate(dateStr) {
+      selectedDates.delete(dateStr);
+      renderCalendar();
+      renderSelectedDatesList();
+    }
+
+    function renderSelectedDatesList() {
+      const listContainer = document.getElementById('selectedList');
+      const countBadge = document.getElementById('selectedCount');
+      
+      countBadge.innerText = selectedDates.size;
+      listContainer.innerHTML = '';
+      
+      if (selectedDates.size === 0) {
+        listContainer.innerHTML = `<div class="empty-state" style="padding: 1rem 0; font-size: 0.85rem;">선택된 날짜가 없습니다.</div>`;
+        return;
+      }
+      
+      const sortedDates = Array.from(selectedDates).sort();
+      sortedDates.forEach(dateStr => {
+        const friendly = formatFriendlyDate(dateStr);
+        const item = document.createElement('div');
+        item.className = 'selected-date-item';
+        item.innerHTML = `
+          <span>${friendly}</span>
+          <button onclick="removeSelectedDate('${dateStr}')">✕</button>
+        `;
+        listContainer.appendChild(item);
+      });
+    }
+
+    // API Call: Create Room
+    function createSchedule() {
+      const titleInput = document.getElementById('scheduleTitle').value.trim();
+      const title = titleInput || "새로운 모임 일정 조율";
+      
+      if (selectedDates.size === 0) {
+        showToast('적어도 한 개 이상의 후보 날짜를 달력에서 선택해주세요.', 'danger');
+        return;
+      }
+      
+      const datesArray = Array.from(selectedDates).sort();
+      
+      fetch('/api/rooms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, dates: datesArray })
+      })
+      .then(res => {
+        if (!res.ok) throw new Error('API creation failed');
+        return res.json();
+      })
+      .then(data => {
+        createdRoomId = data.room_id;
+        const fullUrl = window.location.origin + '/room/' + createdRoomId;
+        
+        document.getElementById('shareUrl').innerText = fullUrl;
+        document.getElementById('sharePanel').style.display = 'flex';
+        
+        showToast('투표방이 성공적으로 생성되었습니다!');
+        
+        // Scroll share panel into view
+        setTimeout(() => {
+          document.getElementById('sharePanel').scrollIntoView({ behavior: 'smooth' });
+        }, 150);
+      })
+      .catch(err => {
+        showToast('방 개설에 실패했습니다. 다시 시도해 주세요.', 'danger');
+      });
+    }
+
+    function copyShareLink() {
+      const urlText = document.getElementById('shareUrl').innerText;
+      navigator.clipboard.writeText(urlText)
+        .then(() => showToast('주소가 클립보드에 복사되었습니다!'))
+        .catch(() => showToast('복사에 실패했습니다. 직접 복사해주세요.', 'danger'));
+    }
+
+    // Render Room Voting Options
+    function renderVoteOptions() {
+      const voteScheduleTitle = document.getElementById('voteScheduleTitle');
+      const voteOptionsList = document.getElementById('voteOptionsList');
+      
+      voteScheduleTitle.innerText = `투표 참여: ${roomState.title}`;
+      voteOptionsList.innerHTML = '';
+      
+      roomState.candidates.forEach(item => {
+        const isLocked = item.voters.length >= 8;
+        const optionCard = document.createElement('div');
+        optionCard.className = `vote-option-card ${isLocked ? 'locked' : ''}`;
+        optionCard.id = `option-card-${item.id}`;
+        
+        if (!isLocked) {
+          optionCard.onclick = () => toggleOptionSelect(item.id);
+        }
+        
+        const friendly = formatFriendlyDate(item.date_str);
+        
+        optionCard.innerHTML = `
+          <div style="display: flex; align-items: center; width: 100%;">
+            <div class="checkbox-custom"></div>
+            <div style="flex-grow: 1;">
+              <div style="font-weight: 700; font-size: 1rem; color: ${isLocked ? 'var(--text-muted)' : 'var(--text-main)'};">
+                ${friendly}
+              </div>
+              <div class="progress-bar-container">
+                <div class="progress-bar ${isLocked ? 'full' : ''}" style="width: ${(item.voters.length / 8) * 100}%"></div>
+              </div>
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.4rem; display: flex; justify-content: space-between;">
+                <span>선착순 마감 카운트</span>
+                <span style="font-weight: bold; color: ${isLocked ? 'var(--danger)' : 'var(--primary)'}">${item.voters.length}/8 명</span>
+              </div>
+            </div>
+          </div>
+          <input type="checkbox" id="check-${item.id}" value="${item.id}" ${isLocked ? 'disabled' : ''}>
+        `;
+        
+        voteOptionsList.appendChild(optionCard);
+      });
+    }
+
+    function toggleOptionSelect(id) {
+      const card = document.getElementById(`option-card-${id}`);
+      const checkbox = document.getElementById(`check-${id}`);
+      if (card.classList.contains('locked')) return;
+      
+      card.classList.toggle('selected');
+      checkbox.checked = !checkbox.checked;
+    }
+
+    // Submit Vote to Backend
+    function submitVote() {
+      const voterNameInput = document.getElementById('voterName');
+      const name = voterNameInput.value.trim();
+      
+      if (!name) {
+        showToast('성함을 입력해 주세요.', 'danger');
+        voterNameInput.focus();
+        return;
+      }
+      
+      const selectedIds = [];
+      roomState.candidates.forEach(item => {
+        const checkbox = document.getElementById(`check-${item.id}`);
+        if (checkbox && checkbox.checked && !checkbox.disabled) {
+          selectedIds.push(item.id);
+        }
+      });
+      
+      if (selectedIds.length === 0) {
+        showToast('투표하실 후보 날짜를 선택해주세요.', 'danger');
+        return;
+      }
+      
+      fetch(`/api/rooms/${roomState.id}/vote`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ voter_name: name, candidate_ids: selectedIds })
+      })
+      .then(res => {
+        if (!res.ok) {
+          return res.json().then(data => { throw new Error(data.error || '투표 실패') });
+        }
+        return res.json();
+      })
+      .then(updatedRoom => {
+        roomState = updatedRoom;
+        renderVoteOptions();
+        renderResults();
+        
+        voterNameInput.value = '';
+        showToast(`${name}님의 투표가 정상 반영되었습니다.`);
+        
+        // Scroll to results
+        setTimeout(() => {
+          document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+        }, 300);
+      })
+      .catch(err => {
+        showToast(err.message, 'danger');
+      });
+    }
+
+    // Render Vote Results
+    function renderResults() {
+      const resultBoard = document.getElementById('resultBoard');
+      resultBoard.innerHTML = '';
+      
+      roomState.candidates.forEach(item => {
+        const count = item.voters.length;
+        const isLocked = count >= 8;
+        const card = document.createElement('div');
+        card.className = `result-card ${isLocked ? 'locked-border' : ''}`;
+        
+        let votersHtml = '';
+        if (item.voters.length > 0) {
+          item.voters.forEach(voter => {
+            votersHtml += `<span class="voter-tag">${voter}</span>`;
+          });
+        } else {
+          votersHtml = `<span style="color: var(--text-muted); font-size: 0.9rem; font-style: italic;">아직 투표자가 없습니다.</span>`;
+        }
+        
+        const friendly = formatFriendlyDate(item.date_str);
+
+        card.innerHTML = `
+          <div class="result-header">
+            <div class="result-date" style="color: ${isLocked ? 'var(--success)' : 'var(--text-main)'}">
+              ${friendly}
+            </div>
+            <div class="result-count ${isLocked ? 'maxed' : ''}">
+              ${isLocked ? '<span class="lock-badge">🔒 인원 확정(8/8)</span>' : `<span>${count}/8 명</span>`}
+            </div>
+          </div>
+          <div class="progress-bar-container" style="height: 4px; margin-top: 0.25rem;">
+            <div class="progress-bar ${isLocked ? 'full' : ''}" style="width: ${(count / 8) * 100}%"></div>
+          </div>
+          <div class="voters-list">
+            ${votersHtml}
+          </div>
+        `;
+        
+        resultBoard.appendChild(card);
+      });
+    }
+
+    // Simulate FCFS Lock using API
+    function simulateFullVotes() {
+      if (!roomState) return;
+      
+      fetch(`/api/rooms/${roomState.id}/simulate`, {
+        method: 'POST'
+      })
+      .then(res => {
+        if (!res.ok) return res.json().then(data => { throw new Error(data.error) });
+        return res.json();
+      })
+      .then(updatedRoom => {
+        roomState = updatedRoom;
+        renderVoteOptions();
+        renderResults();
+        
+        showToast('⚡ 시뮬레이션: 첫 번째 날짜에 8명 마감 투표를 자동 추가했습니다!', 'success');
+        
+        setTimeout(() => {
+          document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+        }, 300);
+      })
+      .catch(err => {
+        showToast(err.message, 'danger');
+      });
+    }
+
+    // Helper: Reset and Go Main
+    function resetAllData() {
+      goToMain();
+    }
+  </script>
+</body>
+</html>
